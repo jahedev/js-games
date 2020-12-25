@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  background-color: #1c2833;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+  position: relative;
+  vertical-align: middle;
+}
+
+.container {
+  margin: auto;
+  margin-top: 30px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+table {
+  border: solid thin;
+  border-color: white;
+  border-spacing: 1rem;
+  table-layout: fixed;
+  empty-cells: show;
+}
+
+tr {
+  height: 13rem;
+}
+td {
+  background-color: #a2d9ce;
+  width: 10rem;
+  font-size: 10rem;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+}
+.btn.visible {
+  visibility: visible;
+}
+
+.btn {
+  visibility: hidden;
+  margin-top: 20px;
+  height: 2em;
+  width: 40%;
+  border: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2em;
+  cursor: pointer;
+  display: inline-block;
+  text-transform: uppercase;
+  outline: none;
+  position: relative;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  background-color: #1c2833;
+  color: white;
+  border: solid thin white;
+}
+
+.btn:active {
+  background-color: white;
+  color: #1c2833;
+}
+
+h3 {
+  margin-top: 20px;
+  color: white;
+}
