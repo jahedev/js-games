@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo&display=swap');
+
+body {
+  background-color: #becf74;
+  text-align: center;
+}
+
+body,
+button {
+  font-family: Exo, Arial, Helvetica, sans-serif;
+}
+
+#grid {
+  margin: auto;
+  width: auto;
+  border: 1px solid black;
+  display: table;
+}
+
+/* .grid-row {
+  display: table-row;
+  width: auto;
+  clear: both;
+}
+
+.grid-col {
+  float: left;
+  display: table-column;
+  width: auto;
+} */
+
+.box {
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  float: left;
+}
+
+.clear {
+  clear: both;
+}
+
+button {
+  width: 200px;
+  height: 50px;
+  font-size: 1.2rem;
+  background-color: #373832;
+  color: white;
+  border: 1px solid black;
+
+  /* Disable Select */
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+button:hover {
+  background-color: #504f4f;
+}
+
+button:active {
+  background-color: #373832;
+  color: white;
+  border: 1px solid black;
+}
