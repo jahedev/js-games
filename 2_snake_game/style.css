@@ -15,19 +15,8 @@ button {
   width: auto;
   border: 1px solid black;
   display: table;
+  background-color: #dad8d8;
 }
-
-/* .grid-row {
-  display: table-row;
-  width: auto;
-  clear: both;
-}
-
-.grid-col {
-  float: left;
-  display: table-column;
-  width: auto;
-} */
 
 .box {
   border: 1px solid black;
