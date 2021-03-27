@@ -2,4 +2,4 @@
 These are some project I created while I was learning JavaScript
 
 1. Tic-Tac-Toe: https://jahedev.github.io/js-learning-projects/1_tic-tac-toe/index.html
-2. Snake Game (work in progress): https://jahedev.github.io/js-learning-projects/1_tic-tac-toe/index.html
+2. Snake Game (work in progress): https://jahedev.github.io/js-learning-projects/2_snake_game/index.html
