@@ -19,10 +19,14 @@ button {
 }
 
 .box {
-  border: 1px solid black;
   width: 30px;
   height: 30px;
   float: left;
+}
+
+.showgridbox {
+  /* Optional Grid */
+  border: 1px solid black;
 }
 
 .clear {
@@ -36,6 +40,7 @@ button {
   background-color: #373832;
   color: white;
   border: 1px solid black;
+  cursor: pointer;
 
   /* Disable Select */
   user-select: none; /* supported by Chrome and Opera */
@@ -53,4 +58,8 @@ button:active {
   background-color: #373832;
   color: white;
   border: 1px solid black;
+}
+
+.hidden {
+  display: none;
 }

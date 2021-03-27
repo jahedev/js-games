@@ -1,22 +1,18 @@
 // DOM Elements
 let grid = document.getElementById('grid')
 let gameStatus = document.getElementById('status')
+let newGameBtn = document.querySelector('button')
+let showGridCheckBox = document.getElementById('showgrid')
 
 // Game Variables
 let gridSize = 16
 let gameEnded = false
-const snakeBody = [
+let snakeBody = [
   { x: 10, y: 10 },
   { x: 11, y: 10 },
-  { x: 12, y: 10 },
-  { x: 12, y: 10 },
-  { x: 13, y: 10 },
-  { x: 14, y: 10 },
-  { x: 15, y: 10 },
-  { x: 16, y: 10 },
 ]
 
-let foodPos = { x: 3, y: 3 }
+let foodPos = { x: 4, y: 4 }
 
 const snakeColor = '#4a47a3'
 const snakeHeadColor = '#eeeeee'
@@ -48,8 +44,15 @@ function generateGrid(size) {
 }
 
 function restartGame() {
-  gameEnded = false
   generateGrid(gridSize)
+  snakeBody = [
+    { x: 10, y: 10 },
+    { x: 11, y: 10 },
+  ]
+  foodPos = { x: 4, y: 4 }
+  currMovingPos = MovingPos.LEFT
+  newGameBtn.classList.add('hidden')
+  gameEnded = false
 }
 
 function game(currentTime) {
@@ -59,7 +62,6 @@ function game(currentTime) {
   const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000
   if (secondsSinceLastRender < 1 / SNAKE_SPEED) return
 
-  console.log(secondsSinceLastRender)
   lastRenderTime = currentTime
 
   update()
@@ -67,8 +69,6 @@ function game(currentTime) {
 }
 
 function update() {
-  console.log('update')
-
   const newX = snakeBody[0].x + currMovingPos.x
   const newY = snakeBody[0].y + currMovingPos.y
   const snakeHead = { x: newX, y: newY }
@@ -83,7 +83,7 @@ function update() {
   snakeBody.unshift(snakeHead)
   snakeBody.pop()
 
-  console.log(snakeBody)
+  gameStatus.innerText = `Score: ${snakeBody.length - 2}`
 }
 
 function snakeHeadCollision(snakeHead) {
@@ -95,7 +95,19 @@ function snakeHeadCollision(snakeHead) {
   // food collision
   if (foodPos.x === snakeHead.x && foodPos.y === snakeHead.y) {
     genRandomFoodLocation()
+    growSnake()
   }
+}
+
+function growSnake() {
+  const len = snakeBody.length
+  const offsetX = snakeBody[len - 1].x - snakeBody[len - 2].x
+  const offsetY = snakeBody[len - 2].y - snakeBody[len - 1].y
+
+  const snakeTail = snakeBody[len - 1]
+  const newSnakeTail = { x: snakeTail.x + offsetX, y: snakeTail.y + offsetY }
+
+  snakeBody.push(newSnakeTail)
 }
 
 function draw() {
@@ -136,7 +148,6 @@ function genRandomFoodLocation() {
     let randY = getRandomArbitrary(1, gridSize)
 
     const id = `r${randX}c${randY}`
-    console.log(id)
     const gridBox = document.getElementById(id)
 
     if (gridBox.style.backgroundColor !== '') continue
@@ -148,7 +159,8 @@ function genRandomFoodLocation() {
 
 function endGame() {
   gameEnded = true
-  gameStatus.innerText = 'Game Over'
+  gameStatus.innerText = `Game Over. Score: ${snakeBody.length - 2}`
+  newGameBtn.classList.remove('hidden')
 }
 
 document.addEventListener('keydown', (e) => {
@@ -171,8 +183,22 @@ document.addEventListener('keydown', (e) => {
       break
   }
 })
+
+newGameBtn.addEventListener('click', (e) => {
+  restartGame()
+  window.requestAnimationFrame(game)
+})
+
+showGridCheckBox.addEventListener('change', (e) => {
+  let sheet = document.styleSheets[0]
+
+  if (e.target.checked) {
+    sheet.cssRules['4'].style.border = '1px solid black'
+  } else {
+    sheet.cssRules['4'].style.border = ''
+  }
+})
 ;(function main() {
   // Initialize Game
   generateGrid(gridSize)
-  window.requestAnimationFrame(game)
 })()
