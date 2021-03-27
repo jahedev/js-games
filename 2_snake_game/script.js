@@ -71,16 +71,25 @@ function update() {
 
   const newX = snakeBody[0].x + currMovingPos.x
   const newY = snakeBody[0].y + currMovingPos.y
+  const snakeHead = { x: newX, y: newY }
+
+  snakeHeadCollision(snakeHead)
 
   if (newX <= 0 || newY <= 0 || newX > 16 || newY > 16) {
     endGame()
     return
   }
 
-  snakeBody.unshift({ x: newX, y: newY })
+  snakeBody.unshift(snakeHead)
   snakeBody.pop()
 
   console.log(snakeBody)
+}
+
+function snakeHeadCollision(snakeHead) {
+  snakeBody.slice(1).forEach((el) => {
+    if (el.x === snakeHead.x && el.y === snakeHead.y) endGame()
+  })
 }
 
 function draw() {
