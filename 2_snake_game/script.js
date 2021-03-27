@@ -87,9 +87,15 @@ function update() {
 }
 
 function snakeHeadCollision(snakeHead) {
+  // snakeBody collision
   snakeBody.slice(1).forEach((el) => {
     if (el.x === snakeHead.x && el.y === snakeHead.y) endGame()
   })
+
+  // food collision
+  if (foodPos.x === snakeHead.x && foodPos.y === snakeHead.y) {
+    genRandomFoodLocation()
+  }
 }
 
 function draw() {
@@ -116,6 +122,28 @@ function drawFood() {
   const id = `r${foodPos.y}c${foodPos.x}`
   const gridBox = document.getElementById(id)
   gridBox.style.backgroundColor = foodColor
+}
+
+function getRandomArbitrary(min, max) {
+  return Math.floor(Math.random() * (max - min) + min)
+}
+
+function genRandomFoodLocation() {
+  let spaceEmpty = true
+
+  while (spaceEmpty) {
+    let randX = getRandomArbitrary(1, gridSize)
+    let randY = getRandomArbitrary(1, gridSize)
+
+    const id = `r${randX}c${randY}`
+    console.log(id)
+    const gridBox = document.getElementById(id)
+
+    if (gridBox.style.backgroundColor !== '') continue
+
+    foodPos = { x: randX, y: randY }
+    spaceEmpty = false
+  }
 }
 
 function endGame() {
