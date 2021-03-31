@@ -13,6 +13,8 @@ let player1Turn = true
 const COLORS = {
   RED: '#D4252E',
   YELLOW: '#F1DE00',
+  BLUE: '#1F90FF',
+  GREY: '#393F45',
 }
 
 // drawing X (col) and Y (row) coordinates of the checkers
@@ -32,7 +34,22 @@ grid = [
 
 class Board {
   draw() {
-    c.drawImage(imgBoard, 0, 0)
+    c.beginPath()
+    c.rect(0, 0, 640, 480)
+    c.fillStyle = COLORS.BLUE
+    c.fill()
+
+    for (let row = 0; row < 6; row++) {
+      for (let col = 0; col < 7; col++) {
+        const addX = 90 * col
+        const addY = 80 * row
+
+        c.beginPath()
+        c.arc(50 + addX, 40 + addY, 36, 0, Math.PI * 2, false)
+        c.fillStyle = COLORS.GREY
+        c.fill()
+      }
+    }
   }
 }
 
