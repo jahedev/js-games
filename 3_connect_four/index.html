@@ -8,15 +8,12 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Canvas Resource -->
-    <img id="board" src="res/board.png" alt="" width="0" height="0" />
-
     <div class="container">
       <h1>Connect Four</h1>
       <canvas></canvas>
       <div id="restart-prompt">
-        <h3 id="status"></h3>
-        <button class="">New Game</button>
+        <h3 id="status"><span style="color: red">Red's</span> Turn</h3>
+        <button onclick="window.location.reload();" class="">New Game</button>
       </div>
     </div>
     <script src="script.js"></script>

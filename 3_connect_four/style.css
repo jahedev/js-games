@@ -2,13 +2,13 @@
 
 body {
   background-color: #393e46;
-  color: #f8f7de;
   text-align: center;
 }
 
 body,
 button {
   font-family: Exo, Arial, Helvetica, sans-serif;
+  color: #f8f5f1;
 }
 
 .clear {
