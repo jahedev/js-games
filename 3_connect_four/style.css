@@ -45,3 +45,7 @@ button:active {
 .hidden {
   display: none;
 }
+
+canvas {
+  cursor: pointer;
+}

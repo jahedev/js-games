@@ -2,20 +2,38 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const imgBoard = document.getElementById('board')
 
-canvas.width = 800
-canvas.height = 600
+// Set Canvas Dimensions to Board Image Size
+canvas.width = 640
+canvas.height = 480
 
+// Player 1 is red by default
 let player1Turn = true
 
+// These are the colors of the checkers
 const COLORS = {
-  WHITE: '#f6f6f6',
-  BLUE: '#276678',
+  RED: '#D4252E',
+  YELLOW: '#F1DE00',
 }
 
-function currPlayerColor() {
-  let color = player1Turn ? 'red' : 'yellow'
-  player1Turn = !player1Turn
-  return color
+// drawing X (col) and Y (row) coordinates of the checkers
+let loc_col = [50, 140, 230, 320, 410, 500, 590] // n += 90
+let loc_row = [40, 120, 200, 280, 360, 440] // n += 80
+
+// store the empty, red, and yellow checkers
+grid = [
+  /* grid[row][col] */
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+]
+
+class Board {
+  draw() {
+    c.drawImage(imgBoard, 0, 0)
+  }
 }
 
 class Checker {
@@ -32,56 +50,27 @@ class Checker {
     c.fillStyle = this.color
     c.fill()
   }
-
-  static COLORS = {
-    RED: '#D4252E',
-    YELLOW: '#F1DE00',
-  }
 }
 
-class Board {
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
-
-  draw() {
-    // c.beginPath()
-    // c.rect(this.x, this.y, 600, 500)
-    // c.fillStyle = '#D4252E'
-    // c.fill()
-    c.drawImage(imgBoard, 80, 80)
-  }
-}
-
-class XY {
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
-}
-
-const board = new Board(100, 100)
+const board = new Board(0, 0)
 board.draw()
 
-loc_col = [130, 220, 310, 400, 490, 580, 670]
-loc_row = [120, 200, 280, 360, 440, 520]
-
-grid = [
-  /* grid[row][col] */
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-]
+/*
+ * player1 = red
+ * player2 = yellow
+ * Then, change current player's turn and return the color
+ */
+function currPlayerColor() {
+  let color = player1Turn ? 'red' : 'yellow'
+  player1Turn = !player1Turn
+  return color
+}
 
 /* Puts the chekers in to the specified column and returns true.
  * If there is another checkers below, it will be placed on top.
  * If there is no space left to fill, it will return false.
  */
-function insertChecker(col, color) {
+function insertChecker(col) {
   if (isNaN(col) || col < 0 || col > 7) return false
 
   let emptyRow = -1
@@ -94,34 +83,39 @@ function insertChecker(col, color) {
   if (emptyRow === -1) return false
 
   // add checkers to that row
-  grid[emptyRow][col] = color
+  grid[emptyRow][col] = currPlayerColor()
 }
 
-insertChecker(0, currPlayerColor())
-insertChecker(0, currPlayerColor())
-insertChecker(0, currPlayerColor())
-insertChecker(1, currPlayerColor())
+canvas.addEventListener('click', (e) => {
+  const clickX = e.layerX // where user click on canvas/board
+  const splitWidth = canvas.width / 7 // split canvas into 7 columns
 
-for (let row = 0; row < 6; row++) {
-  for (let col = 0; col < 7; col++) {
-    switch (grid[row][col]) {
-      case undefined:
-        continue
-      case 'red':
-        new Checker(loc_col[col], loc_row[row], 36, Checker.COLORS.RED).draw()
-        break
-      case 'yellow':
-        new Checker(
-          loc_col[col],
-          loc_row[row],
-          36,
-          Checker.COLORS.YELLOW
-        ).draw()
-        break
+  // instead of a bunch of if/else statements, I noticed a pattern
+  // which allows me to insert the checker into the correct column
+  // using a loop, i.e. columns 0 to 6
+  for (let i = 0; i < 7; i++) {
+    if (clickX >= splitWidth * i && clickX < splitWidth * (i + 1)) {
+      insertChecker(i)
+      break
+    }
+  }
+
+  drawCheckers()
+})
+
+function drawCheckers() {
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      switch (grid[row][col]) {
+        case undefined:
+          continue
+        case 'red':
+          new Checker(loc_col[col], loc_row[row], 36, COLORS.RED).draw()
+          break
+        case 'yellow':
+          new Checker(loc_col[col], loc_row[row], 36, COLORS.YELLOW).draw()
+          break
+      }
     }
   }
 }
-
-window.addEventListener('click', (e) => {
-  console.log(e.clientX, e.clientY)
-})
