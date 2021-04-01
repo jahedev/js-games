@@ -2,6 +2,13 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const status = document.querySelector('#status')
 
+// Audio
+let playmusic = document.getElementById('playmusic')
+const aud_checker = new Audio('res/checker.mp3')
+const aud_winner = new Audio('res/winner.mp3')
+const aud_draw = new Audio('res/draw.mp3')
+const aud_music = new Audio('res/music.mp3')
+
 // Set Canvas Dimensions to Board Image Size
 canvas.width = 640
 canvas.height = 480
@@ -20,13 +27,13 @@ const COLORS = {
   GREY: '#393e46',
 }
 
-// drawing X (col) and Y (row) coordinates of the checkers
+// Drawing X (col) and Y (row) coordinates of the checkers
 let loc_col = [50, 140, 230, 320, 410, 500, 590] // n += 90
 let loc_row = [40, 120, 200, 280, 360, 440] // n += 80
 
-// store the empty, red, and yellow checkers
+// Store the empty, red, and yellow checkers
+// grid[row][col]
 let grid = [
-  /* grid[row][col] */
   [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -35,8 +42,11 @@ let grid = [
   [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
 ]
 
+// Used to remember where we added a translucent
+// checker over the last hovered column
 let lastHover = { row: 0, col: 0 }
 
+// Draws a blue rectangle with a 6x7  circle grid
 class Board {
   draw() {
     c.beginPath()
@@ -58,6 +68,7 @@ class Board {
   }
 }
 
+// Draws an individual checker
 class Checker {
   constructor(x, y, radius, color, alpha = 1.0) {
     this.x = x
@@ -77,9 +88,18 @@ class Checker {
   }
 }
 
-const board = new Board(0, 0)
-board.draw()
+function restartGame() {
+  for (let row = 0; row < 6; row++)
+    for (let col = 0; col < 7; col++) grid[row][col] = undefined
 
+  player1Turn = false
+  changeCurrPlayer()
+  lastHover = { row: 0, col: 0 }
+  gameEnded = false
+  drawCheckers()
+}
+
+// changes active player and changes the status message
 function changeCurrPlayer() {
   player1Turn = !player1Turn
   status.innerHTML = player1Turn
@@ -127,8 +147,9 @@ function insertChecker(col) {
   // add checkers to that row
   grid[emptyRow][col] = currPlayerColor()
   changeCurrPlayer()
+  aud_checker.play()
 
-  gameIsFinished()
+  checkIfGameEnded()
 }
 
 function drawCheckers() {
@@ -163,8 +184,13 @@ function drawCheckers() {
     }
   }
 }
-
+/*
+ * Provided with a X within, 0 <= X 0 <= 640,
+ * this function will return the column number
+ * where that pixel is on, 0 <= col <= 6
+ */
 function getColFromMouseX(X) {
+  if (isNaN(X) || X > canvas.width || X < 1) return -1
   const splitWidth = canvas.width / 7 // split canvas into 7 columns
 
   // instead of a bunch of if/else statements, I noticed a pattern
@@ -179,11 +205,15 @@ function getColFromMouseX(X) {
 }
 
 /*
- * Draws a translucent checker on a specified column
- * Erases any previous translucent checkers
+ * Adds a value of _yellow or _red to grid and then calls
+ * drawCheckers() to draw a translucent checker over hovered
+ * column.
  */
 function drawHoverChecker(col) {
-  if (lastHover.col === col) return
+  if (lastHover.col === col) return // hovered col has not changed
+
+  // If the entire column is full, or user inserted a checker into
+  // that column, then we will reset lastHover.x and lastHover.y to -1
   if (lastHover.row !== -1 && lastHover.col !== -1) {
     const lastGridLoc = grid[lastHover.row][lastHover.col]
     if (lastGridLoc !== undefined && lastGridLoc.charAt(0) !== '_') {
@@ -192,6 +222,8 @@ function drawHoverChecker(col) {
       return
     }
 
+    // If there was a translucent checker drawn over a PREVIOUSLY hovered
+    // column, then delete it.
     grid[lastHover.row][lastHover.col] = undefined
   }
 
@@ -210,23 +242,6 @@ function drawHoverChecker(col) {
   lastHover.row = emptyRow
   lastHover.col = col
 }
-
-canvas.addEventListener('click', (e) => {
-  if (gameEnded) return
-  const clickX = e.layerX // where user click on canvas/board
-  const col = getColFromMouseX(clickX)
-  if (col !== -1) {
-    insertChecker(col)
-    drawCheckers()
-  }
-})
-
-canvas.addEventListener('mousemove', (e) => {
-  const mouseOverX = e.layerX
-  const col = getColFromMouseX(mouseOverX)
-  if (col === -1) return
-  drawHoverChecker(col)
-})
 
 /*
  * If there is a four in a row, it will return the color,
@@ -255,21 +270,38 @@ function finishGame(winner) {
   winner = winner.toUpperCase()
   if (winner === 'RED') {
     status.innerHTML = `<span class="red">${winner}</span> won the game!`
+    aud_winner.play()
   } else if (winner === 'YELLOW') {
     status.innerHTML = `<span class="yellow">${winner}</span> won the game!`
+    aud_winner.play()
+  } else if (winner === 'DRAW') {
+    status.innerHTML = 'Game is a draw!'
+    aud_draw.play()
   }
 }
+
+// Check if Game is Finished Logic:
 
 /*
  * Check every row first, then check columns, then check diagnols
  * If there is a 4 in a row of one color, the game will end and
  * the winner will be displayed in the status.
  */
-function gameIsFinished() {
+function checkIfGameEnded() {
   if (checkWinningRows() || checkWinningCols() || checkWinningDiagnols())
     gameEnded = true
 
-  console.log('gameEnded:', gameEnded)
+  // check if game is a draw
+  let isGameDraw = true
+  for (let col = 0; col < 7; col++) {
+    const gridVal = grid[0][col]
+    if (gridVal === undefined || gridVal.charAt(0) === '_') isGameDraw = false
+  }
+
+  if (isGameDraw) {
+    gameEnded = true
+    finishGame('draw')
+  }
 
   return gameEnded
 }
@@ -285,6 +317,7 @@ function checkWinningRows() {
   }
   return false
 }
+
 function checkWinningCols() {
   let winner
   for (let col = 0; col < 7; col++) {
@@ -353,8 +386,52 @@ function checkWinningDiagnols() {
     break
   }
 
-  console.log(winner)
-
   if (winner !== undefined) finishGame(winner)
   return winner !== undefined
 }
+
+// Event Listeners
+
+// Inserts checkers into clicked column
+canvas.addEventListener('click', (e) => {
+  if (gameEnded) return
+  const clickX = e.layerX // where user click on canvas/board
+  const col = getColFromMouseX(clickX)
+  if (col !== -1) {
+    insertChecker(col)
+    drawCheckers()
+  }
+})
+
+// To draw a translucent checker over a hovered column
+canvas.addEventListener('mousemove', (e) => {
+  const mouseOverX = e.layerX
+  const col = getColFromMouseX(mouseOverX)
+  if (col === -1) return
+  drawHoverChecker(col)
+})
+
+// Loops the music
+aud_music.addEventListener(
+  'ended',
+  (e) => {
+    aud_music.currentTime = 0
+    aud_music.play()
+  },
+  false
+)
+
+// Play music only when the checkbox is checked
+playmusic.addEventListener('change', (e) => {
+  let sheet = document.styleSheets[0]
+
+  if (e.target.checked) {
+    aud_music.play()
+  } else {
+    aud_music.pause()
+  }
+})
+
+// Draw Game Board at Start
+const board = new Board(0, 0)
+board.draw()

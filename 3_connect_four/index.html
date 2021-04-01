@@ -5,17 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Connect Four - M. Jahed Hossain</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
       <h1>Connect Four</h1>
+      <input
+        type="checkbox"
+        id="playmusic"
+        name="playmusic"
+        value="Play Music"
+      />
+      <span>Play Music</span>
+      <br /><br />
       <canvas></canvas>
       <div id="restart-prompt">
         <h3 id="status"><span style="color: red">Red's</span> Turn</h3>
-        <button onclick="window.location.reload();" class="">New Game</button>
+        <button onclick="restartGame();" class="">New Game</button>
       </div>
-      <p>Sound from zapsplat.com and dl-sounds.com</p>
+      <br />
+      <p>Sounds from zapsplat.com and dl-sounds.com</p>
     </div>
     <script src="script.js"></script>
   </body>
