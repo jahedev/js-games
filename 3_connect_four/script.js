@@ -96,6 +96,7 @@ function currPlayerColor() {
  * If there is no space left to fill, it will return false.
  */
 function insertChecker(col) {
+  if (gameEnded) return
   if (isNaN(col) || col < 0 || col > 7) return false
 
   let emptyRow = -1
@@ -126,6 +127,8 @@ function insertChecker(col) {
   // add checkers to that row
   grid[emptyRow][col] = currPlayerColor()
   changeCurrPlayer()
+
+  gameIsFinished()
 }
 
 function drawCheckers() {
@@ -209,6 +212,7 @@ function drawHoverChecker(col) {
 }
 
 canvas.addEventListener('click', (e) => {
+  if (gameEnded) return
   const clickX = e.layerX // where user click on canvas/board
   const col = getColFromMouseX(clickX)
   if (col !== -1) {
@@ -223,3 +227,134 @@ canvas.addEventListener('mousemove', (e) => {
   if (col === -1) return
   drawHoverChecker(col)
 })
+
+/*
+ * If there is a four in a row, it will return the color,
+ * otherwise, it will return undefined
+ */
+function fourInRow(...values) {
+  let matchesNeeded = 4
+  let lastVal = ''
+  for (let val of values) {
+    if (lastVal !== val) {
+      lastVal = val
+      matchesNeeded = 4
+    }
+
+    if (val === lastVal) {
+      matchesNeeded -= 1
+    }
+
+    if (matchesNeeded <= 0) return val
+  }
+
+  return undefined
+}
+
+function finishGame(winner) {
+  winner = winner.toUpperCase()
+  if (winner === 'RED') {
+    status.innerHTML = `<span class="red">${winner}</span> won the game!`
+  } else if (winner === 'YELLOW') {
+    status.innerHTML = `<span class="yellow">${winner}</span> won the game!`
+  }
+}
+
+/*
+ * Check every row first, then check columns, then check diagnols
+ * If there is a 4 in a row of one color, the game will end and
+ * the winner will be displayed in the status.
+ */
+function gameIsFinished() {
+  if (checkWinningRows() || checkWinningCols() || checkWinningDiagnols())
+    gameEnded = true
+
+  console.log('gameEnded:', gameEnded)
+
+  return gameEnded
+}
+
+function checkWinningRows() {
+  let winner
+  for (let row = 0; row < 6; row++) {
+    winner = fourInRow(...grid[row])
+    if (winner !== undefined) {
+      finishGame(winner)
+      return true
+    }
+  }
+  return false
+}
+function checkWinningCols() {
+  let winner
+  for (let col = 0; col < 7; col++) {
+    let colVals = []
+    for (let row = 0; row < 6; row++) {
+      colVals.push(grid[row][col])
+    }
+    winner = fourInRow(...colVals)
+    if (winner !== undefined) {
+      finishGame(winner)
+      return true
+    }
+  }
+  return false
+}
+
+function checkWinningDiagnols() {
+  let winner = undefined
+
+  let loopEnd = false
+
+  while (true) {
+    winner = fourInRow(grid[3][0], grid[2][1], grid[1][2], grid[0][3])
+    if (!!winner) break
+
+    winner = fourInRow(
+      grid[4][0],
+      grid[3][1],
+      grid[2][2],
+      grid[1][3],
+      grid[0][4]
+    )
+    if (!!winner) break
+
+    winner = fourInRow(
+      grid[5][0],
+      grid[4][1],
+      grid[3][2],
+      grid[2][3],
+      grid[1][4],
+      grid[0][5]
+    )
+    if (!!winner) break
+
+    winner = fourInRow(
+      grid[5][1],
+      grid[4][2],
+      grid[3][3],
+      grid[2][4],
+      grid[1][5],
+      grid[0][6]
+    )
+    if (!!winner) break
+
+    winner = fourInRow(
+      grid[5][2],
+      grid[4][3],
+      grid[3][4],
+      grid[2][5],
+      grid[1][6]
+    )
+    if (!!winner) break
+
+    winner = fourInRow(grid[5][3], grid[4][4], grid[3][5], grid[2][6])
+
+    break
+  }
+
+  console.log(winner)
+
+  if (winner !== undefined) finishGame(winner)
+  return winner !== undefined
+}

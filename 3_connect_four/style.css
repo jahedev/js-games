@@ -49,3 +49,11 @@ button:active {
 canvas {
   cursor: pointer;
 }
+
+.red {
+  color: red;
+}
+
+.yellow {
+  color: yellow;
+}
