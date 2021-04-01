@@ -103,8 +103,8 @@ function restartGame() {
 function changeCurrPlayer() {
   player1Turn = !player1Turn
   status.innerHTML = player1Turn
-    ? `<span style="color:red;">Red's</span> Turn`
-    : `<span style="color:yellow;">Yellow's</span> Turn`
+    ? `<span class="red">Red's</span> Turn`
+    : `<span class="yellow">Yellow's</span> Turn`
 }
 
 function currPlayerColor() {
