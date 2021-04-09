@@ -1,4 +1,4 @@
-# Misc. JavaScript Projects
+# Misc. JavaScript Games as I Learn Game Development
 
 - A portofolio of miscellaneous games/projects made with JavaScript
 - Although I did not create separate repos for these projects, there are some interesting ones here.
